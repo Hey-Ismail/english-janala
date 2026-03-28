@@ -192,12 +192,31 @@
         <span class="text-[#00bcffFF]">Let's</span> Learn Vocabularies
       </p>
       <!-- JS Work -->
+
       <div
         id="level-container"
         class="flex lg:justify-center items-center gap-6 lg:w-11/12 mx-auto my-10 flex-col lg:flex-row"
       ></div>
       <div id="loding-bar" class="flex justify-center px-10">
         <span class="loading loading-dots loading-xl"></span>
+      </div>
+      <div class="flex justify-center mb-5">
+        <div class="join">
+          <div>
+            <label class="input validator join-item">
+              <i class="fa-brands fa-sistrix"></i>
+              <input
+                id="input-search"
+                type="text"
+                placeholder="Search vocabulary"
+                required
+              />
+            </label>
+          </div>
+          <button id="btn-search" class="btn btn-primary join-item">
+            Search
+          </button>
+        </div>
       </div>
       <div
         id="word-container"
