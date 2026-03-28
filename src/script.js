@@ -62,6 +62,7 @@ const loadWordDetails = async (id) => {
 ================================*/
 const showLodingBar = (status) => {
   const loadingBar = document.getElementById("loding-bar");
+  loadingBar.classList.add("hidden");
   const wordContainer = document.getElementById("word-container");
 
   if (status) {
