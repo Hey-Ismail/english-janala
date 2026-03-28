@@ -1,8 +1,21 @@
-/* =====================================================
-                    MOBILE MENU
-===================================================== */
+/* =========================================================
+                        UTILITIES
+========================================================= */
+
+function pronounceWord(word) {
+  const utterance = new SpeechSynthesisUtterance(word);
+
+  utterance.lang = "en-EN";
+
+  window.speechSynthesis.speak(utterance);
+}
+
+/* =========================================================
+                      MOBILE MENU
+========================================================= */
 
 const mobileMenuButton = document.getElementById("mobileMenuButton");
+
 const mobileMenu = document.getElementById("mobileMenu");
 
 if (mobileMenuButton && mobileMenu) {
@@ -30,30 +43,33 @@ if (mobileMenuButton && mobileMenu) {
   });
 }
 
-/* =====================================================
-                      API CALLS
-===================================================== */
+/* =========================================================
+                        API
+========================================================= */
 
 const lodeAllLevels = () => {
   fetch("https://openapi.programming-hero.com/api/levels/all")
     .then((res) => res.json())
-    .then((data) => styleBtns(data.data));
+    .then((data) => {
+      styleBtns(data.data);
+    });
 };
 
-const loadLevelWord = (id) => {
+const loadLevelWord = (levelId) => {
   showLodingBar(true);
 
-  fetch(`https://openapi.programming-hero.com/api/level/${id}`)
+  fetch(`https://openapi.programming-hero.com/api/level/${levelId}`)
     .then((res) => res.json())
     .then((data) => {
-      styleSelectedBtn(id);
+      styleSelectedBtn(levelId);
+
       showWords(data.data);
     });
 };
 
-const loadWordDetails = async (id) => {
+const loadWordDetails = async (wordId) => {
   const res = await fetch(
-    `https://openapi.programming-hero.com/api/word/${id}`,
+    `https://openapi.programming-hero.com/api/word/${wordId}`,
   );
 
   const data = await res.json();
@@ -61,9 +77,9 @@ const loadWordDetails = async (id) => {
   modalStyle(data.data);
 };
 
-/* =====================================================
-                     LOADING STATE
-===================================================== */
+/* =========================================================
+                      LOADING STATE
+========================================================= */
 
 const loadingBar = document.getElementById("loding-bar");
 
@@ -74,16 +90,18 @@ const showLodingBar = (status) => {
 
   if (status) {
     loadingBar.classList.remove("hidden");
+
     wordContainer.classList.add("hidden");
   } else {
     loadingBar.classList.add("hidden");
+
     wordContainer.classList.remove("hidden");
   }
 };
 
-/* =====================================================
-                      LEVEL BUTTONS
-===================================================== */
+/* =========================================================
+                    LEVEL BUTTONS
+========================================================= */
 
 const styleBtns = (levels) => {
   const levelContainer = document.getElementById("level-container");
@@ -96,8 +114,11 @@ const styleBtns = (levels) => {
     wrapper.innerHTML = `
 
       <button
+
         id="selected-lesson-btn-${level.level_no}"
+
         onclick="loadLevelWord(${level.level_no})"
+
 
         class="
           border-2
@@ -111,9 +132,10 @@ const styleBtns = (levels) => {
           px-3
           py-1
 
-          rounded-[4px]
+          rounded
           lg:w-full
         "
+
       >
 
         <img
@@ -121,9 +143,13 @@ const styleBtns = (levels) => {
           alt=""
         />
 
+
         <p>
+
           Level : ${level.level_no}
+
         </p>
+
 
       </button>
 
@@ -138,23 +164,24 @@ let activeLevelBtn = null;
 const styleSelectedBtn = (id) => {
   if (activeLevelBtn) {
     activeLevelBtn.style.backgroundColor = "";
+
     activeLevelBtn.style.color = "";
   }
 
-  const selectedBtn = document.getElementById(`selected-lesson-btn-${id}`);
+  const btn = document.getElementById(`selected-lesson-btn-${id}`);
 
-  if (!selectedBtn) return;
+  if (!btn) return;
 
-  selectedBtn.style.backgroundColor = "#422ad5FF";
+  btn.style.backgroundColor = "#422ad5FF";
 
-  selectedBtn.style.color = "#FFFFFF";
+  btn.style.color = "#FFFFFF";
 
-  activeLevelBtn = selectedBtn;
+  activeLevelBtn = btn;
 };
 
-/* =====================================================
-                      WORD CARDS
-===================================================== */
+/* =========================================================
+                       WORD CARDS
+========================================================= */
 
 const showWords = (words) => {
   const container = document.getElementById("word-container");
@@ -167,19 +194,25 @@ const showWords = (words) => {
     container.innerHTML = `
 
       <div
+
         class="
           lg:col-span-3
+
           p-10
           rounded-3xl
+
           bg-white
           shadow-sm
 
           flex
           flex-col
-          items-center
+
           justify-center
+          items-center
+
           text-center
         "
+
       >
 
         <img
@@ -187,37 +220,52 @@ const showWords = (words) => {
           alt=""
         />
 
+
         <p
+
           class="
             text-[#79716B]
             text-[13.38px]
+
             my-3
           "
+
         >
+
           আপনি এখনো কোন Lesson Select করেন নাই
+
         </p>
+
 
 
         <p
+
           class="
             text-[#292524FF]
+
             text-2xl
             lg:text-4xl
+
             font-medium
           "
+
         >
+
           নেক্সট Lesson এ যান
+
         </p>
+
 
       </div>
 
     `;
 
     showLodingBar(false);
+
     return;
   }
 
-  /* ---------- word list ---------- */
+  /* ---------- words ---------- */
 
   words.forEach((word) => {
     const card = document.createElement("div");
@@ -225,71 +273,105 @@ const showWords = (words) => {
     card.innerHTML = `
 
       <div
+
         class="
           bg-white
+
           p-10
           rounded-lg
+
           text-center
         "
+
       >
 
 
-        <div>
 
-          <h1
-            class="
-              text-3xl
-              font-bold
-              mb-2
-            "
-          >
-            ${word.word ?? "N/A"}
-          </h1>
+        <h1
+
+          class="
+            text-3xl
+            font-bold
+
+            mb-2
+          "
+
+        >
+
+          ${word.word ?? "N/A"}
+
+        </h1>
 
 
-          <p class="text-gray-700 mb-4">
-            Meaning / Pronounciation
-          </p>
+
+        <p
+
+          class="
+            text-gray-700
+            mb-4
+          "
+
+        >
+
+          Meaning / Pronunciation
+
+        </p>
 
 
-          <p
-            class="
-              text-md
-              text-gray-600
-              font-medium
-              mb-12
-            "
-          >
-            ${word.meaning ?? "N/A"}
-            /
-            ${word.pronunciation ?? "N/A"}
-          </p>
 
-        </div>
+        <p
+
+          class="
+            text-md
+            text-gray-600
+
+            font-medium
+            mb-12
+          "
+
+        >
+
+          ${word.meaning ?? "N/A"}
+
+          /
+
+          ${word.pronunciation ?? "N/A"}
+
+        </p>
+
+
 
 
 
         <div
+
           class="
             flex
             justify-between
             items-center
           "
+
         >
 
 
+
           <button
+
             onclick="loadWordDetails(${word.id})"
+
             class="
               p-1
               rounded-lg
               shadow
             "
+
           >
 
             <img
               src="./assets/Group 10.png"
+
               alt="info"
+
               class="w-8 h-8"
             />
 
@@ -297,24 +379,34 @@ const showWords = (words) => {
 
 
 
+
+
           <button
+
+            onclick="pronounceWord('${word.word}')"
+
             class="
               p-1
               rounded-lg
               shadow
             "
+
           >
 
             <img
               src="./assets/Group 9.png"
+
               alt="sound"
+
               class="w-8 h-8"
             />
 
           </button>
 
 
+
         </div>
+
 
 
       </div>
@@ -327,9 +419,9 @@ const showWords = (words) => {
   showLodingBar(false);
 };
 
-/* =====================================================
+/* =========================================================
                          MODAL
-===================================================== */
+========================================================= */
 
 const modalStyle = (word) => {
   const modal = document.getElementById("word-details-modal");
@@ -339,176 +431,162 @@ const modalStyle = (word) => {
   modal.innerHTML = `
 
     <div
+
       class="
         p-4
+
         rounded-2xl
+
         border
         border-[#dbe8f4]
+
         bg-[#f8fafc]
       "
+
     >
 
-      <div
+
+
+      <h2
+
         class="
-          space-y-4
-          text-[#111827]
+          text-xl
+          lg:text-3xl
+
+          font-semibold
         "
+
       >
 
+        ${word.word ?? "N/A"}
 
 
-        <h2
-          class="
-            text-xl
-            lg:text-3xl
-            font-semibold
-          "
-        >
 
-          ${word?.word ?? "N/A"}
+        <span class="font-semibold">
 
-          <span class="font-semibold">
+          (
 
-            (
-            <i class="fa-solid fa-microphone-lines"></i>
+          <i class="fa-solid fa-microphone-lines"></i>
 
-            :
-            ${word?.pronunciation ?? "N/A"}
-            )
+          :
 
-          </span>
+          ${word.pronunciation ?? "N/A"}
 
-        </h2>
+          )
+
+        </span>
+
+
+
+      </h2>
 
 
 
 
-        <div>
 
-          <p
-            class="
-              text-xl
-              lg:text-2xl
-              font-bold
-            "
-          >
-            Meaning
-          </p>
+      <div class="mt-4">
+
+        <p class="font-bold text-xl">
+
+          Meaning
+
+        </p>
 
 
-          <p
-            class="
-              mt-1
-              text-lg
-              sm:text-xl
-            "
-          >
-            ${word?.meaning ?? "No meaning found"}
-          </p>
+        <p>
 
-        </div>
+          ${word.meaning ?? "No meaning found"}
 
-
-
-
-        <div>
-
-          <p
-            class="
-              text-xl
-              sm:text-2xl
-              font-bold
-            "
-          >
-            Example
-          </p>
-
-
-          <p
-            class="
-              mt-1
-              text-base
-              sm:text-lg
-              text-[#374151]
-            "
-          >
-            ${word?.sentence ?? "No example found"}
-          </p>
-
-        </div>
-
-
-
-
-        <div>
-
-          <p
-            class="
-              text-xl
-              sm:text-2xl
-              font-bold
-            "
-          >
-            সমার্থক শব্দ গুলো
-          </p>
-
-
-          <div
-            class="
-              mt-3
-              flex
-              flex-wrap
-              gap-2
-            "
-          >
-
-            <span class="badge">
-              ${synonyms[0] ?? ""}
-            </span>
-
-            <span class="badge">
-              ${synonyms[1] ?? ""}
-            </span>
-
-            <span class="badge">
-              ${synonyms[2] ?? ""}
-            </span>
-
-          </div>
-
-        </div>
-
-
-
-
-        <button
-          onclick="
-            document
-            .getElementById('my_modal_5')
-            .close()
-          "
-
-          class="
-            mt-2
-            px-5
-            py-2
-
-            rounded-lg
-
-            bg-[#4338ca]
-            text-white
-
-            font-semibold
-
-            hover:bg-[#3a31b8]
-          "
-        >
-          Complete Learning
-        </button>
-
-
+        </p>
 
       </div>
+
+
+
+
+
+      <div class="mt-4">
+
+        <p class="font-bold text-xl">
+
+          Example
+
+        </p>
+
+
+        <p>
+
+          ${word.sentence ?? "No example found"}
+
+        </p>
+
+      </div>
+
+
+
+
+
+      <div class="mt-4">
+
+        <p class="font-bold text-xl">
+
+          Synonyms
+
+        </p>
+
+
+
+        <div class="flex gap-2 mt-2">
+
+          <span class="badge">
+            ${synonyms[0] ?? ""}
+          </span>
+
+          <span class="badge">
+            ${synonyms[1] ?? ""}
+          </span>
+
+          <span class="badge">
+            ${synonyms[2] ?? ""}
+          </span>
+
+        </div>
+
+      </div>
+
+
+
+
+
+      <button
+
+        onclick="
+          document
+          .getElementById('my_modal_5')
+          .close()
+        "
+
+        class="
+          mt-5
+
+          px-5
+          py-2
+
+          rounded-lg
+
+          bg-[#4338ca]
+          text-white
+
+          font-semibold
+        "
+
+      >
+
+        Complete Learning
+
+      </button>
+
+
 
     </div>
 
@@ -517,49 +595,69 @@ const modalStyle = (word) => {
   document.getElementById("my_modal_5").showModal();
 };
 
-/* =====================================================
+/* =========================================================
+                        SEARCH
+========================================================= */
+
+document.getElementById("btn-search").addEventListener("click", () => {
+  const keyword = document
+    .getElementById("input-search")
+    .value.trim()
+    .toLowerCase();
+
+  fetch("https://openapi.programming-hero.com/api/words/all")
+    .then((res) => res.json())
+    .then((data) => {
+      const filtered = data.data.filter((word) =>
+        word.word.toLowerCase().includes(keyword),
+      );
+
+      filtered.length ? showWords(filtered) : showNotFoundMessage();
+    });
+});
+
+/* =========================================================
                     DEFAULT STATES
-===================================================== */
+========================================================= */
 
 const showDefaultMessage = () => {
   document.getElementById("word-container").innerHTML = `
 
       <div
+
         class="
           lg:col-span-3
+
           p-10
+
           rounded-3xl
           bg-white
+
           shadow-sm
 
           flex
           flex-col
+
           justify-center
           items-center
+
           text-center
         "
+
       >
 
-        <p
-          class="
-            text-[#79716B]
-            text-[13.38px]
-            my-3
-          "
-        >
+        <p class="text-[#79716B] my-3">
+
           আপনি এখনো কোন Lesson Select করেন নাই
+
         </p>
 
 
-        <p
-          class="
-            text-[#292524FF]
-            text-2xl
-            lg:text-4xl
-            font-medium
-          "
-        >
+
+        <p class="text-2xl lg:text-4xl font-medium">
+
           একটি Lesson Select করুন
+
         </p>
 
       </div>
@@ -571,41 +669,40 @@ const showNotFoundMessage = () => {
   document.getElementById("word-container").innerHTML = `
 
       <div
+
         class="
           lg:col-span-3
+
           p-10
+
           rounded-3xl
           bg-white
+
           shadow-sm
 
           flex
           flex-col
+
           justify-center
           items-center
+
           text-center
         "
+
       >
 
-        <p
-          class="
-            text-[#79716B]
-            text-[13.38px]
-            my-3
-          "
-        >
+        <p class="text-[#79716B] my-3">
+
           দুঃখিত, এই শব্দটি খুঁজে পাওয়া যায়নি
+
         </p>
 
 
-        <p
-          class="
-            text-[#292524FF]
-            text-2xl
-            lg:text-4xl
-            font-medium
-          "
-        >
-            অন্য একটি শব্দ দিয়ে চেষ্টা করুন
+
+        <p class="text-2xl lg:text-4xl font-medium">
+
+          অন্য একটি শব্দ দিয়ে চেষ্টা করুন
+
         </p>
 
       </div>
@@ -613,34 +710,9 @@ const showNotFoundMessage = () => {
     `;
 };
 
-/* =====================================================
-                        SEARCH
-===================================================== */
-
-document.getElementById("btn-search").addEventListener("click", () => {
-  const input = document.getElementById("input-search");
-
-  const keyword = input.value.trim().toLowerCase();
-
-  fetch("https://openapi.programming-hero.com/api/words/all")
-    .then((res) => res.json())
-    .then((data) => {
-      const result = data.data.filter((word) =>
-        word.word.toLowerCase().includes(keyword),
-      );
-
-      if (result.length > 0) {
-        showWords(result);
-      } else {
-        showNotFoundMessage();
-      }
-    });
-});
-
-/* =====================================================
-                         INIT
-===================================================== */
+/* =========================================================
+                          INIT
+========================================================= */
 
 lodeAllLevels();
-
 showDefaultMessage();
