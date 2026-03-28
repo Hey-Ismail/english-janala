@@ -1,6 +1,7 @@
-/* ===============================
-        MOBILE MENU TOGGLE
-================================*/
+/* =====================================================
+                    MOBILE MENU
+===================================================== */
+
 const mobileMenuButton = document.getElementById("mobileMenuButton");
 const mobileMenu = document.getElementById("mobileMenu");
 
@@ -11,6 +12,7 @@ if (mobileMenuButton && mobileMenu) {
     mobileMenu.classList.toggle("hidden");
 
     mobileMenuButton.setAttribute("aria-expanded", String(!isOpen));
+
     mobileMenuButton.setAttribute(
       "aria-label",
       isOpen ? "Open menu" : "Close menu",
@@ -22,18 +24,20 @@ if (mobileMenuButton && mobileMenu) {
       mobileMenu.classList.add("hidden");
 
       mobileMenuButton.setAttribute("aria-expanded", "false");
+
       mobileMenuButton.setAttribute("aria-label", "Open menu");
     }
   });
 }
 
-/* ===============================
-          API CALLS
-================================*/
+/* =====================================================
+                      API CALLS
+===================================================== */
+
 const lodeAllLevels = () => {
   fetch("https://openapi.programming-hero.com/api/levels/all")
     .then((res) => res.json())
-    .then((values) => styleBtns(values.data));
+    .then((data) => styleBtns(data.data));
 };
 
 const loadLevelWord = (id) => {
@@ -41,9 +45,9 @@ const loadLevelWord = (id) => {
 
   fetch(`https://openapi.programming-hero.com/api/level/${id}`)
     .then((res) => res.json())
-    .then((value) => {
+    .then((data) => {
       styleSelectedBtn(id);
-      showWords(value.data);
+      showWords(data.data);
     });
 };
 
@@ -52,17 +56,20 @@ const loadWordDetails = async (id) => {
     `https://openapi.programming-hero.com/api/word/${id}`,
   );
 
-  const details = await res.json();
+  const data = await res.json();
 
-  modalStyle(details.data);
+  modalStyle(data.data);
 };
 
-/* ===============================
-          LOADING UI
-================================*/
+/* =====================================================
+                     LOADING STATE
+===================================================== */
+
+const loadingBar = document.getElementById("loding-bar");
+
+loadingBar.classList.add("hidden");
+
 const showLodingBar = (status) => {
-  const loadingBar = document.getElementById("loding-bar");
-  loadingBar.classList.add("hidden");
   const wordContainer = document.getElementById("word-container");
 
   if (status) {
@@ -74,196 +81,386 @@ const showLodingBar = (status) => {
   }
 };
 
-/* ===============================
-          BUTTON UI
-================================*/
-const styleBtns = (btns) => {
+/* =====================================================
+                      LEVEL BUTTONS
+===================================================== */
+
+const styleBtns = (levels) => {
   const levelContainer = document.getElementById("level-container");
 
   levelContainer.innerHTML = "";
 
-  btns.forEach((element) => {
-    const btn = document.createElement("div");
+  levels.forEach((level) => {
+    const wrapper = document.createElement("div");
 
-    btn.innerHTML = `
+    wrapper.innerHTML = `
+
       <button
-        id="selected-lesson-btn-${element.level_no}"
-        onclick="loadLevelWord(${element.level_no})"
-        class="border-2 border-[#422ad5FF] flex items-center justify-center px-3 py-1 gap-2 rounded-[4px] lg:w-full"
+        id="selected-lesson-btn-${level.level_no}"
+        onclick="loadLevelWord(${level.level_no})"
+
+        class="
+          border-2
+          border-[#422ad5FF]
+
+          flex
+          items-center
+          justify-center
+
+          gap-2
+          px-3
+          py-1
+
+          rounded-[4px]
+          lg:w-full
+        "
       >
-        <img src="./assets/fa-book-open.png" alt="" />
-        <p>Level : ${element.level_no}</p>
+
+        <img
+          src="./assets/fa-book-open.png"
+          alt=""
+        />
+
+        <p>
+          Level : ${level.level_no}
+        </p>
+
       </button>
+
     `;
 
-    levelContainer.append(btn);
+    levelContainer.append(wrapper);
   });
 };
 
 let activeLevelBtn = null;
 
-const styleSelectedBtn = (btnId) => {
+const styleSelectedBtn = (id) => {
   if (activeLevelBtn) {
     activeLevelBtn.style.backgroundColor = "";
     activeLevelBtn.style.color = "";
   }
 
-  const selectedBtn = document.getElementById(`selected-lesson-btn-${btnId}`);
+  const selectedBtn = document.getElementById(`selected-lesson-btn-${id}`);
 
   if (!selectedBtn) return;
 
   selectedBtn.style.backgroundColor = "#422ad5FF";
+
   selectedBtn.style.color = "#FFFFFF";
 
   activeLevelBtn = selectedBtn;
 };
 
-/* ===============================
-          WORD CARD UI
-================================*/
-const showWords = (jsonDatas) => {
-  const wordContainer = document.getElementById("word-container");
+/* =====================================================
+                      WORD CARDS
+===================================================== */
 
-  wordContainer.innerHTML = "";
+const showWords = (words) => {
+  const container = document.getElementById("word-container");
 
-  if (!jsonDatas || jsonDatas.length === 0) {
-    wordContainer.innerHTML = `
-      <div class="lg:col-span-3 rounded-3xl bg-white p-10 text-center shadow-sm flex justify-center items-center flex-col">
-        
-        <img src="./assets/image 1.png" alt="" />
+  container.innerHTML = "";
 
-        <p class="text-[#79716B] text-[13.38px] my-3">
+  /* ---------- empty state ---------- */
+
+  if (!words || words.length === 0) {
+    container.innerHTML = `
+
+      <div
+        class="
+          lg:col-span-3
+          p-10
+          rounded-3xl
+          bg-white
+          shadow-sm
+
+          flex
+          flex-col
+          items-center
+          justify-center
+          text-center
+        "
+      >
+
+        <img
+          src="./assets/image 1.png"
+          alt=""
+        />
+
+        <p
+          class="
+            text-[#79716B]
+            text-[13.38px]
+            my-3
+          "
+        >
           আপনি এখনো কোন Lesson Select করেন নাই
         </p>
 
-        <p class="text-[#292524FF] font-medium lg:text-4xl text-2xl">
+
+        <p
+          class="
+            text-[#292524FF]
+            text-2xl
+            lg:text-4xl
+            font-medium
+          "
+        >
           নেক্সট Lesson এ যান
         </p>
 
       </div>
+
     `;
 
     showLodingBar(false);
-
     return;
   }
 
-  jsonDatas.forEach((words) => {
-    const wordsDiv = document.createElement("div");
+  /* ---------- word list ---------- */
 
-    wordsDiv.innerHTML = `
-      <div class="bg-white rounded-lg p-10 text-center">
+  words.forEach((word) => {
+    const card = document.createElement("div");
+
+    card.innerHTML = `
+
+      <div
+        class="
+          bg-white
+          p-10
+          rounded-lg
+          text-center
+        "
+      >
+
 
         <div>
 
-          <h1 class="text-3xl font-bold mb-2">
-            ${words.word ?? "N/A"}
+          <h1
+            class="
+              text-3xl
+              font-bold
+              mb-2
+            "
+          >
+            ${word.word ?? "N/A"}
           </h1>
+
 
           <p class="text-gray-700 mb-4">
             Meaning / Pronounciation
           </p>
 
-          <p class="text-md text-gray-600 font-medium mb-12">
-            ${words.meaning ?? "N/A"} /
-            ${words.pronunciation ?? "N/A"}
+
+          <p
+            class="
+              text-md
+              text-gray-600
+              font-medium
+              mb-12
+            "
+          >
+            ${word.meaning ?? "N/A"}
+            /
+            ${word.pronunciation ?? "N/A"}
           </p>
 
         </div>
 
 
-        <div class="flex justify-between items-center">
+
+        <div
+          class="
+            flex
+            justify-between
+            items-center
+          "
+        >
+
 
           <button
-            onclick="loadWordDetails(${words.id})"
-            class="p-1 rounded-lg shadow"
+            onclick="loadWordDetails(${word.id})"
+            class="
+              p-1
+              rounded-lg
+              shadow
+            "
           >
+
             <img
-              class="w-8 h-8"
               src="./assets/Group 10.png"
-              alt="Info icon"
-            />
-          </button>
-
-
-          <button class="p-1 rounded-lg shadow">
-            <img
+              alt="info"
               class="w-8 h-8"
-              src="./assets/Group 9.png"
-              alt="Sound icon"
             />
+
           </button>
+
+
+
+          <button
+            class="
+              p-1
+              rounded-lg
+              shadow
+            "
+          >
+
+            <img
+              src="./assets/Group 9.png"
+              alt="sound"
+              class="w-8 h-8"
+            />
+
+          </button>
+
 
         </div>
 
+
       </div>
+
     `;
 
-    wordContainer.append(wordsDiv);
+    container.append(card);
   });
 
   showLodingBar(false);
 };
 
-/* ===============================
-            MODAL UI
-================================*/
-const modalStyle = (element) => {
-  const wordDetailsModal = document.getElementById("word-details-modal");
+/* =====================================================
+                         MODAL
+===================================================== */
 
-  const synonyms = element?.synonyms ?? [];
+const modalStyle = (word) => {
+  const modal = document.getElementById("word-details-modal");
 
-  wordDetailsModal.innerHTML = `
+  const synonyms = word?.synonyms ?? [];
 
-    <div class="rounded-2xl border border-[#dbe8f4] bg-[#f8fafc] p-4">
+  modal.innerHTML = `
 
-      <div class="space-y-4 text-[#111827]">
+    <div
+      class="
+        p-4
+        rounded-2xl
+        border
+        border-[#dbe8f4]
+        bg-[#f8fafc]
+      "
+    >
 
-        <h2 class="text-xl font-semibold lg:text-3xl">
+      <div
+        class="
+          space-y-4
+          text-[#111827]
+        "
+      >
 
-          ${element?.word ?? "N/A"}
+
+
+        <h2
+          class="
+            text-xl
+            lg:text-3xl
+            font-semibold
+          "
+        >
+
+          ${word?.word ?? "N/A"}
 
           <span class="font-semibold">
-            (<i class="fa-solid fa-microphone-lines"></i> :
-            ${element?.pronunciation ?? "N/A"})
+
+            (
+            <i class="fa-solid fa-microphone-lines"></i>
+
+            :
+            ${word?.pronunciation ?? "N/A"}
+            )
+
           </span>
 
         </h2>
 
 
+
+
         <div>
 
-          <p class="text-xl font-bold lg:text-2xl">
+          <p
+            class="
+              text-xl
+              lg:text-2xl
+              font-bold
+            "
+          >
             Meaning
           </p>
 
-          <p class="mt-1 text-lg sm:text-xl">
-            ${element?.meaning ?? "No meaning found"}
+
+          <p
+            class="
+              mt-1
+              text-lg
+              sm:text-xl
+            "
+          >
+            ${word?.meaning ?? "No meaning found"}
           </p>
 
         </div>
 
 
+
+
         <div>
 
-          <p class="text-xl font-bold sm:text-2xl">
+          <p
+            class="
+              text-xl
+              sm:text-2xl
+              font-bold
+            "
+          >
             Example
           </p>
 
-          <p class="mt-1 text-base text-[#374151] sm:text-lg">
-            ${element?.sentence ?? "No example found"}
+
+          <p
+            class="
+              mt-1
+              text-base
+              sm:text-lg
+              text-[#374151]
+            "
+          >
+            ${word?.sentence ?? "No example found"}
           </p>
 
         </div>
 
 
+
+
         <div>
 
-          <p class="text-xl font-bold sm:text-2xl">
+          <p
+            class="
+              text-xl
+              sm:text-2xl
+              font-bold
+            "
+          >
             সমার্থক শব্দ গুলো
           </p>
 
-          <div class="mt-3 flex flex-wrap gap-2">
+
+          <div
+            class="
+              mt-3
+              flex
+              flex-wrap
+              gap-2
+            "
+          >
 
             <span class="badge">
               ${synonyms[0] ?? ""}
@@ -282,49 +479,168 @@ const modalStyle = (element) => {
         </div>
 
 
-        <div class="pt-1">
 
-          <button
-            onclick="document.getElementById('my_modal_5').close()"
-            class="rounded-lg bg-[#4338ca] px-5 py-2 text-base font-semibold text-white hover:bg-[#3a31b8]"
-          >
-            Complete Learning
-          </button>
 
-        </div>
+        <button
+          onclick="
+            document
+            .getElementById('my_modal_5')
+            .close()
+          "
+
+          class="
+            mt-2
+            px-5
+            py-2
+
+            rounded-lg
+
+            bg-[#4338ca]
+            text-white
+
+            font-semibold
+
+            hover:bg-[#3a31b8]
+          "
+        >
+          Complete Learning
+        </button>
+
+
 
       </div>
 
     </div>
+
   `;
 
   document.getElementById("my_modal_5").showModal();
 };
 
-/* ===============================
-           DEFAULT UI
-================================*/
+/* =====================================================
+                    DEFAULT STATES
+===================================================== */
+
 const showDefaultMessage = () => {
-  const wordContainer = document.getElementById("word-container");
+  document.getElementById("word-container").innerHTML = `
 
-  wordContainer.innerHTML = `
+      <div
+        class="
+          lg:col-span-3
+          p-10
+          rounded-3xl
+          bg-white
+          shadow-sm
 
-    <div class="lg:col-span-3 rounded-3xl bg-white p-10 text-center shadow-sm flex justify-center items-center flex-col">
+          flex
+          flex-col
+          justify-center
+          items-center
+          text-center
+        "
+      >
 
-      <p class="text-[#79716B] text-[13.38px] my-3">
-        আপনি এখনো কোন Lesson Select করেন নাই
-      </p>
+        <p
+          class="
+            text-[#79716B]
+            text-[13.38px]
+            my-3
+          "
+        >
+          আপনি এখনো কোন Lesson Select করেন নাই
+        </p>
 
-      <p class="text-[#292524FF] font-medium lg:text-4xl text-2xl">
-        একটি Lesson Select করুন
-      </p>
 
-    </div>
-  `;
+        <p
+          class="
+            text-[#292524FF]
+            text-2xl
+            lg:text-4xl
+            font-medium
+          "
+        >
+          একটি Lesson Select করুন
+        </p>
+
+      </div>
+
+    `;
 };
 
-/* ===============================
-         INIT
-================================*/
+const showNotFoundMessage = () => {
+  document.getElementById("word-container").innerHTML = `
+
+      <div
+        class="
+          lg:col-span-3
+          p-10
+          rounded-3xl
+          bg-white
+          shadow-sm
+
+          flex
+          flex-col
+          justify-center
+          items-center
+          text-center
+        "
+      >
+
+        <p
+          class="
+            text-[#79716B]
+            text-[13.38px]
+            my-3
+          "
+        >
+          দুঃখিত, এই শব্দটি খুঁজে পাওয়া যায়নি
+        </p>
+
+
+        <p
+          class="
+            text-[#292524FF]
+            text-2xl
+            lg:text-4xl
+            font-medium
+          "
+        >
+            অন্য একটি শব্দ দিয়ে চেষ্টা করুন
+        </p>
+
+      </div>
+
+    `;
+};
+
+/* =====================================================
+                        SEARCH
+===================================================== */
+
+document.getElementById("btn-search").addEventListener("click", () => {
+  const input = document.getElementById("input-search");
+
+  const keyword = input.value.trim().toLowerCase();
+
+  fetch("https://openapi.programming-hero.com/api/words/all")
+    .then((res) => res.json())
+    .then((data) => {
+      const result = data.data.filter((word) =>
+        word.word.toLowerCase().includes(keyword),
+      );
+
+      if (result.length > 0) {
+        showWords(result);
+      } else {
+        showNotFoundMessage();
+      }
+    });
+});
+
+/* =====================================================
+                         INIT
+===================================================== */
+
 lodeAllLevels();
+
 showDefaultMessage();
