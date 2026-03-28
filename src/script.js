@@ -1,4 +1,4 @@
-//? genareate by GPT
+//* genareate by GPT
 const mobileMenuButton = document.getElementById("mobileMenuButton");
 const mobileMenu = document.getElementById("mobileMenu");
 
@@ -28,6 +28,16 @@ const lodeAllLevels = () => {
   url.then((res) => res.json()).then((values) => styleBtns(values.data));
 };
 
+const showLodingBar = (status) => {
+  if (status === true) {
+    document.getElementById("loding-bar").classList.remove("hidden");
+    document.getElementById("word-container").classList.add("hidden");
+  } else {
+    document.getElementById("loding-bar").classList.add("hidden");
+    document.getElementById("word-container").classList.remove("hidden");
+  }
+};
+
 const styleBtns = (btns) => {
   //part one : element ta ke dhorbo and reset korbo
   const levelContainer = document.getElementById("level-container");
@@ -51,6 +61,7 @@ const styleBtns = (btns) => {
 };
 
 const loadLevelWord = (id) => {
+  showLodingBar(true);
   const url = fetch(`https://openapi.programming-hero.com/api/level/${id}`);
   url
     .then((res) => res.json())
@@ -60,8 +71,8 @@ const loadLevelWord = (id) => {
     });
 };
 
+let activeLevelBtn = null;
 const styleSelectedBtn = (btn) => {
-  let activeLevelBtn = null;
   if (activeLevelBtn) {
     activeLevelBtn.style.backgroundColor = "";
     activeLevelBtn.style.color = "";
@@ -156,6 +167,7 @@ const showWords = (jsonDatas) => {
         <p class="text-[#292524FF] font-medium lg:text-4xl text-2xl">নেক্সট Lesson এ যান</p>
       </div>
     `;
+    showLodingBar(false);
     return;
   }
 
@@ -184,6 +196,7 @@ const showWords = (jsonDatas) => {
     `;
     wordContainer.append(wordsDiv);
   });
+  showLodingBar(false);
 };
 
 lodeAllLevels(); //call funciton
